@@ -23,9 +23,12 @@ class Exercise(models.Model):
     equipment = models.CharField(max_length=100, blank=True)
     video_url = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    media_file = models.ImageField(upload_to='exercises/', blank=True, null=True)
 
     def __str__(self):
         return self.title
+
+
 
 
 class UserProfile(models.Model):
@@ -59,6 +62,10 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"Профиль {self.user.username}"
     
+
+
+
+
 class Workout(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -76,6 +83,9 @@ class Workout(models.Model):
 
     def __str__(self):
         return f"{self.user.username}: {self.name or 'Тренировка'} ({self.date})"
+
+
+
 
 class WorkoutSet(models.Model):
 
