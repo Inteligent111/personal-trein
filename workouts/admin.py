@@ -10,7 +10,7 @@ class WorkoutSetInline(admin.TabularInline):
 
 
 
-    
+
 @admin.register(Exercise)
 class ExerciseAdmin(admin.ModelAdmin):
     list_display =  ('title', 'muscle_group', 'equipment', 'created_at')
@@ -38,12 +38,11 @@ class WorkoutAdmin(admin.ModelAdmin):
 
 
 
+
 @admin.register(WorkoutSet)
 class WorkoutSetAdmin(admin.ModelAdmin):
     list_display = ('workout', 'exercise', 'set_number', 'weight', 'reps')
     list_filter = ('exercise',)
     
-
-
 
 
