@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ exercise.title }}
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'workouts:exercise_list' %}" class="btn btn-outline-secondary mb-3">
+        ← К каталогу
+    </a>
+    <h1>{{ exercise.title }}</h1>
+    <p class="text-muted">{{ exercise.get_muscle_group_display }}</p>
+    {% if exercise.media_file %}
+    <img src="{{ exercise.media_file.url }}" class="img-fluid rounded mb-3" alt="{{ exercise.title }}">
+    {% endif %}
+    {% if exercise.equipment %}
+        <p><strong>Оборудование:</strong> {{ exercise.equipment }}</p>
+    {% endif %}
+    {% if exercise.description %}
+        <p>{{ exercise.description|linebreaks }}</p>
+    {% endif %}
+    {% if exercise.video_url %}
+    <a href="{{ exercise.video_url }}" target="_blank" class="btn btn-primary">
+        Смотреть видео
+    </a>
+    {% endif %}
+
+{% endblock %}

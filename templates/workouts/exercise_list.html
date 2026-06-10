@@ -4,17 +4,41 @@
 
 {% block content %}
 <h1 class="mb-4">Каталог упражнений</h1>
+    <div class="mb-4 d-flex flex-wrap gap-2">
+    <a href="{% url 'workouts:exercise_list' %}"
+       class="btn {% if not selected_group %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Все
+    </a>
+
+    {% for code, label in muscle_groups %}
+        <a href="?group={{ code }}"
+           class="btn {% if selected_group == code %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            {{ label }}
+        </a>
+    {% endfor %}
+</div>
     <div class="row g-3">
         {% for exercise in exercises %}
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100">
+                    {% if exercise.media_file %}
+                        <img src="{{ exercise.media_file.url }}" class="card-img-top" alt="{{ exercise.title }}">
+                        {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ exercise.title }}</h5>
+                        <h5 class="card-title">
+                            <a href="{% url 'workouts:exercise_detail' pk=exercise.pk %}" class="text-decoration-none">
+                                {{ exercise.title }}
+                            </a>
+                        </h5>                       
                         <p class="card-text text-muted">{{ exercise.get_muscle_group_display }}</p>
+                    
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
-    </div>
-    
+                {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">Упражнений пока нет.</div>
+                    </div>
+            {% endfor %}
+        </div>
 {%endblock %}
