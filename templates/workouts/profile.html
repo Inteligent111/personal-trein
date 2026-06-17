@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Профиль</h1>
+    <p><strong>Имя:</strong> {{ request.user.username }} </p>
+    <p><strong>Дата рождения:</strong> {{ profile.date_of_birth }}</p>
+    <p><strong>Рост:</strong> {{ profile.height }} см</p>
+    <p><strong>Вес:</strong> {{ profile.weight }} кг</p>
+    <p><strong>Цели:</strong> {{ profile.goals }}</p>
+    <a href="{% url 'workouts:edit_profile' %}" class="btn btn-primary">Редактировать профиль</a>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ workout.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'workouts:my_workouts' %}" class="btn btn-secondary mb-3">← Назад к списку</a>
+    
+    <h1 class="display-4">{{ workout.name }}</h1>
+    <p class="text-muted">Здесь будет список упражнений, подходы и рабочий вес для этой тренировки.</p>
+</div>
+{% endblock %}
