@@ -12,4 +12,9 @@ urlpatterns = [
     path('workout/<int:pk>/', views.workout_detail, name='workout_detail'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('profile/', views.profile, name='profile'),
+    path('workout/new/', views.workout_create, name='workout_create'),
+    path('workout/<int:workout_pk>/add-set/', views.add_set_to_workout, name='add_set_to_workout'),
+    path('workout/<int:pk>/edit/', views.WorkoutUpdateView.as_view(), name='workout_edit'),
+    path('workout/<int:pk>/delete/', views.WorkoutDeleteView.as_view(), name='workout_delete'),
+
 ]

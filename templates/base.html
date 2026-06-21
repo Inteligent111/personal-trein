@@ -12,37 +12,38 @@
 
     <!-- Шапка -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'workouts:exercise_list' %}">💪 Personal Trein</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navMain">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Упражнения</a></li>
+    <div class="container">
+        <a class="navbar-brand fw-bold">💪 Personal Trein</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navMain">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'workouts:exercise_list' %}">Упражнения</a></li>
+
+                {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'workouts:my_workouts' %}">Тренировки</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Прогресс</a></li>
-                    
-    {% if user.is_authenticated %}
-        <li class="nav-item">
-            <span class="nav-link text-muted">Привет, {{ user.username }}</span>
-        </li>
-        <li class="nav-item">
-            <form method="post" action="{% url 'logout' %}" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="nav-link btn btn-link">Выйти</button>
-            </form>
-        </li>
-    {% else %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Войти</a>
-        </li>
-    {% endif %}
-</ul>
-                </ul>
-            </div>
-        </div>
-    </nav>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium text-dark" href="#">👤 Моя страница ({{ user.username }})</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link" style="padding: 0.5rem 1rem; border: none; background: none;">Выйти</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Войти</a>
+                    </li>
+                {% endif %}
+            </ul> </div>
+    </div>
+</nav>
 
     <!-- Основной контент -->
     <main class="container py-4">

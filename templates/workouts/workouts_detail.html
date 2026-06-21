@@ -1,12 +1,70 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ workout.name }}{% endblock %}
-
 {% block content %}
 <div class="container mt-4">
-    <a href="{% url 'workouts:my_workouts' %}" class="btn btn-secondary mb-3">← Назад к списку</a>
-    
-    <h1 class="display-4">{{ workout.name }}</h1>
-    <p class="text-muted">Здесь будет список упражнений, подходы и рабочий вес для этой тренировки.</p>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h1 class="card-title">{{ workout.name|default:"Тренеровка без названия" }}</h1>
+            <h6 class="text-muted mb-2">Дата: {{ workout.date|date:"d.m.Y" }}</h6>
+            
+            {% if workout.notes %}
+                <p class="card-text mt-3"><strong>Заметки:</strong> {{ workout.notes }}</p>
+            {% endif %}
+            
+            <a href="{% url 'workouts:my_workouts' %}" class="btn btn-outline-secondary btn-sm mt-2">
+                ← Назад к списку
+            </a>
+            
+            <a href="{% url 'workouts:add_set_to_workout' workout.pk %}" class="btn btn-primary btn-sm mt-2 ms-2">
+                + Добавить подход
+            </a>
+
+            <a href="{% url 'workouts:workout_edit' workout.pk %}" class="btn btn-warning btn-sm mt-2 ms-2">
+                Редактировать
+            </a>
+
+            <a href="{% url 'workouts:workout_delete' workout.pk %}" class="btn btn-danger btn-sm mt-2 ms-2">
+                Удалить
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Выполненные упражнения</h4>
+        </div>
+        <div class="card-body p-0">
+            {% if sets %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 8%">№</th>
+                                <th>Упражнение</th>
+                                <th>Вес (кг)</th>
+                                <th>Повторения</th>
+                                <th>Отдых (сек)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for set in sets %}
+                                <tr>
+                                    <td>{{ set.set_number }}</td>
+                                    <td><strong>{{ set.exercise.title }}</strong></td> 
+                                    <td>{{ set.weight|default:"—" }}</td>
+                                    <td>{{ set.reps }}</td>
+                                    <td>{{ set.rest_seconds|default:"—" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-4 text-center text-muted">
+                    <p class="mb-0">В этой тренировке пока нет добавленных подходов.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
