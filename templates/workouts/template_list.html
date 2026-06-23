@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Доступные программы тренировок</h2>
+
+    <div class="list-group">
+        {% for template in templates %}
+            <a href="{% url 'workouts:template_detail' template.id %}" class="list-group-item list-group-item-action">
+                <h5 class="mb-1">{{ template.name }}</h5>
+                {% if template.description %}
+                    <small class="text-muted">{{ template.description }}</small>
+                {% endif %}
+            </a>
+        {% empty %}
+            <p class="text-muted">Программ тренировок пока нет. Добавь их в админке!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

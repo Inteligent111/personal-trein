@@ -101,3 +101,41 @@ class WorkoutSet(models.Model):
 
     def __str__(self):
         return f"{self.workout.user.username} : {self.exercise.title} X {self.set_number}"
+
+
+
+
+class WorkoutTemplate(models.Model):
+
+    name = models.CharField(max_length=200, blank=True)
+    description = models.TextField(blank=True, null=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True, null=True)
+    is_public = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+class WorkoutTemplateExercise(models.Model):
+    template = models.ForeignKey(
+        WorkoutTemplate,
+        on_delete=models.CASCADE,
+        related_name='template_exercises',
+    )
+    exercise = models.ForeignKey(
+        Exercise,
+        on_delete=models.CASCADE)
+    order = models.PositiveIntegerField(default=0)
+    target_sets = models.PositiveIntegerField(default=3)
+    target_reps = models.PositiveIntegerField(default=10)
+
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.exercise.title} в шаблоне {self.template.name}"
+
+

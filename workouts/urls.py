@@ -16,5 +16,9 @@ urlpatterns = [
     path('workout/<int:workout_pk>/add-set/', views.add_set_to_workout, name='add_set_to_workout'),
     path('workout/<int:pk>/edit/', views.WorkoutUpdateView.as_view(), name='workout_edit'),
     path('workout/<int:pk>/delete/', views.WorkoutDeleteView.as_view(), name='workout_delete'),
+    path('templates/', views.template_list, name='template_list'),
+    path('templates/<int:pk>/', views.template_detail, name='template_detail'),
+    path('template/<int:pk>/start/', views.start_from_template, name='start_from_template'),
+
 
 ]

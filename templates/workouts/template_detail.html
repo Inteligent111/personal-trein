@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ template.name }}</h1>
+    {% if template.description %}
+        <p class="lead text-muted">{{ template.description }}</p>
+    {% endif %}
+
+    <hr>
+
+    <h3 class="mt-4 mb-3">Упражнения в программе:</h3>
+
+    <ul class="list-group">
+        {% for te in template.template_exercises.all %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-secondary me-2">{{ te.order }}</span>
+                    <strong>{{ te.exercise.title }}</strong>
+                </div>
+                <span class="text-primary font-weight-bold">
+                    {{ te.target_sets }} пдх х {{ te.target_reps }} повт
+                </span>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-warning">В этой программе пока нет упражнений.</li>
+        {% endfor %}
+
+
+    </ul>
+
+</div>
+
+<form action="{% url 'workouts:start_from_template' template.id %}" method="post" class="mt-4 mb-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">
+        🚀 Начать тренировку по этому шаблону
+    </button>
+</form>
+
+<a href="{% url 'workouts:template_list' %}" class="btn btn-outline-secondary">
+    Назад к списку
+</a>
+{% endblock %}

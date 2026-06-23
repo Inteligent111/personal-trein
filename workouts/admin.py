@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Exercise, UserProfile, Workout, WorkoutSet
+from .models import Exercise, UserProfile, Workout, WorkoutSet, WorkoutTemplate, WorkoutTemplateExercise
 
 
 
@@ -44,5 +44,16 @@ class WorkoutSetAdmin(admin.ModelAdmin):
     list_display = ('workout', 'exercise', 'set_number', 'weight', 'reps')
     list_filter = ('exercise',)
     
+class WorkoutTemplateExerciseInline(admin.TabularInline):
+    model = WorkoutTemplateExercise
+    extra = 1
+
+
+
+
+@admin.register(WorkoutTemplate)
+class WorkoutTemplateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'author', 'is_public')
+    inlines = [WorkoutTemplateExerciseInline]
 
 

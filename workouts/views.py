@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Exercise, Workout, WorkoutSet
+from .models import Exercise, Workout, WorkoutSet, WorkoutTemplate, WorkoutTemplateExercise
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
@@ -9,7 +9,7 @@ from .forms import UserProfileForm, WorkoutForm, WorkoutSetForm
 from django.views.generic import UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-
+from django.views.decorators.http import require_POST
 # Create your views here.
 
 
@@ -158,3 +158,34 @@ class WorkoutDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Workout.objects.filter(user=self.request.user)
+
+
+
+
+def template_list(request):
+    templates = WorkoutTemplate.objects.filter(is_public=True)
+    return render(request, 'workouts/template_list.html', {'templates': templates})
+
+
+
+
+def template_detail(request, pk):
+    template = get_object_or_404(WorkoutTemplate, pk=pk)
+    return render(request, 'workouts/template_detail.html', {'template': template})
+
+
+
+@require_POST
+def start_from_template(request, pk):
+    template = get_object_or_404(WorkoutTemplate, pk=pk)
+    workout = Workout.objects.create(user=request.user, name=template.name)
+    template_exercises = WorkoutTemplateExercise.objects.filter(template=template)
+    for exercises in template_exercises:
+        for exercise in range(exercises.target_sets):
+            sets = WorkoutSet.objects.filter(workout=workout, exercise = exercises.exercise)
+
+    return redirect('workouts:workout_detail', pk=workout.id)
+
+
+
+
