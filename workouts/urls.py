@@ -19,6 +19,8 @@ urlpatterns = [
     path('templates/', views.template_list, name='template_list'),
     path('templates/<int:pk>/', views.template_detail, name='template_detail'),
     path('template/<int:pk>/start/', views.start_from_template, name='start_from_template'),
-
-
+    path('api/max-weight/<int:exercise_id>/', views.MaxWeightProgressAPI.as_view(), name='exercise_progress_api'),
+    path('api/weekly-volume/<int:exercise_id>/', views.WeeklyVolumeAPI.as_view(), name='weekly_volume_api'),
+    path('progress/', views.progress_page, name='progress_page'),
+    path('api/records/', views.PersonalRecordsAPI.as_view(), name='records_api'),
 ]

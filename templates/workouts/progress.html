@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+      <h2>Мой прогресс тренировок</h2>
+
+
+      <div class="mb-4" style="max-width: 300px;">
+          <label for="exerciseSelect" class="form-label font-weight-bold text-secondary">Упражнение:</label>
+          <select id="exerciseSelect" class="form-control">
+              {% for exercise in exercises %}
+                  <option value="{{ exercise.id }}">{{ exercise.title }}</option>
+              {% endfor %}
+          </select>
+      </div>
+
+      <!-- КАРТОЧКА 1: НЕДЕЛЬНЫЙ ОБЪЕМ -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Динамика недельного объема</h6>
+        </div>
+        <div class="card-body">
+            <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto;">
+                <canvas id="volumeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- КАРТОЧКА 2: МАКСИМАЛЬНЫЙ ВЕС -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Динамика максимального веса</h6>
+        </div>
+        <div class="card-body">
+            <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto;">
+                <canvas id="maxWeightChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">🏆 Таблица личных рекордов</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Упражнение</th>
+                            <th>Максимальный вес</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsTableBody">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadPersonalRecords();
+    function loadPersonalRecords() {
+        fetch('/exercises/api/records/')
+        .then( response => response.json())
+        .then( data => {
+            const tableBody = document.getElementById('recordsTableBody')
+            tableBody.innerHTML = ('')
+            data.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.title}</td>
+                        <td><strong>${item.max_weight ? item.max_weight + ' кг' : '—'}</strong></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        });
+    }
+    const maxWeightCtx = document.getElementById('maxWeightChart');
+    let maxWeightChartInstance = null;
+
+    function loadMaxWeightData(exerciseId) {
+        fetch(`/exercises/api/max-weight/${exerciseId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (maxWeightChartInstance){
+                maxWeightChartInstance.destroy();
+            }
+
+            const labels = data.map(item => item.date);
+            const max_weight = data.map(item => item.max_weight);
+
+            maxWeightChartInstance = new Chart (maxWeightCtx, {
+                type: 'line',
+                data : {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Максимальный вес (кг)',
+                        data: max_weight,
+                        borderWidth: 2
+                    }]
+                }
+            })
+        });
+    }
+
+
+    // 1. Ищем элементы ТОЛЬКО после того, как весь HTML полностью прогрузился
+    const volumeCtx = document.getElementById('volumeChart');
+    const exerciseSelect = document.getElementById('exerciseSelect');
+    let volumeChartInstance = null;
+
+    // 2. Страховка: если мы опечатались в ID в HTML, консоль сразу об этом скажет
+    if (!exerciseSelect) {
+        console.error("Браузер не нашёл элемент с id='exerciseSelect'. Проверь, правильно ли написан id в твоём теге <select>!");
+        return; // Останавливаем код, чтобы не плодить кучу ошибок
+    }
+
+    // 3. Сама функция логики графика
+    function loadVolumeData(exerciseId) {
+        fetch(`/exercises/api/weekly-volume/${exerciseId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (volumeChartInstance) {
+                    volumeChartInstance.destroy();
+                }
+
+                const labels = data.map(item => item.week);
+                const volumes = data.map(item => item.volume);
+
+                volumeChartInstance = new Chart(volumeCtx, {
+                     type: 'line',
+                     data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Объём за неделю (кг)',
+                            data: volumes,
+                            borderWidth: 2
+                        }]
+                    }
+                });
+            });
+    }
+
+    // 4. Автозапуск при первой загрузке
+    loadVolumeData(exerciseSelect.value);
+    loadMaxWeightData(exerciseSelect.value);
+    // 5. Слушатель кликов и переключений
+    exerciseSelect.addEventListener('change', function() {
+        loadVolumeData(exerciseSelect.value);
+        loadMaxWeightData(exerciseSelect.value);
+    });
+});
+</script>
+
+{% endblock %}

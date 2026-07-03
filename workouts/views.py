@@ -1,5 +1,9 @@
+from django.db.models import Max, F, Sum
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models.functions import TruncWeek
 from .models import Exercise, Workout, WorkoutSet, WorkoutTemplate, WorkoutTemplateExercise
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
@@ -189,3 +193,43 @@ def start_from_template(request, pk):
 
 
 
+class MaxWeightProgressAPI(APIView):
+    def get(self, request, exercise_id):
+        raw_data = WorkoutSet.objects.filter(exercise_id=exercise_id) \
+            .annotate(date=F('workout__date')) \
+            .values('date') \
+            .annotate(max_weight=Max('weight')) \
+            .order_by('date')
+
+        return Response(raw_data)
+
+
+
+
+class WeeklyVolumeAPI(APIView):
+    def get(self, request, exercise_id):
+        raw_data = (
+            WorkoutSet.objects.filter(exercise_id=exercise_id)
+            .annotate(
+                set_volume=F('weight') * F('reps'),
+                week=TruncWeek('workout__date')
+            )
+            .values('week')
+            .annotate(volume=Sum('set_volume'))
+            .order_by('week')
+        )
+
+        return Response(raw_data)
+
+def progress_page(request):
+    exercises = Exercise.objects.all()
+    return render(request, 'workouts/progress.html', {'exercises': exercises})
+
+
+class PersonalRecordsAPI(APIView):
+    def get(self, request):
+        exercise = Exercise.objects.annotate(
+                max_weight=Max('workoutset__weight'),
+        ) \
+        .values('id', 'title', 'max_weight')
+        return Response(exercise)
